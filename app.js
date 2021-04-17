@@ -119,7 +119,7 @@ app.get('/api/private/v1/kuaidi/:orderno', logistics.getLogisticsInfo)
  */
 // 如果没有路径处理就返回 Not Found
 app.use(function(req, res, next) {
-  res.sendResult(null, 404, 'Not Found')
+  res.sendResult(null, 404, 'Not Founds')
 })
 
 app.listen(8888)

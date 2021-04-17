@@ -152,7 +152,7 @@ module.exports.update = function(modelName,id,updateObj,cb) {
 	var db = databaseModule.getDatabase();
 	var Model = db.models[modelName];
 	Model.get(id,function(err,obj){
-		if(err) return cb("更新失败",null);
+		if(err) return cb("更新失败",err);
 		obj.save(updateObj,cb);
 	});
 }
