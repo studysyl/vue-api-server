@@ -200,7 +200,7 @@ module.exports.getAllCerts = function(params,cb){
         })
     });
 }
-
+//根据id查找证书
 module.exports.getCert = function(certId,cb){
     if(!certId) return cb("证书id不能为空");
     if(isNaN(parseInt(certId))) return cb("证书id必须为数字")
@@ -227,8 +227,8 @@ module.exports.deleteCert = function(certId,cb){
 // 更新数据
 module.exports.updateCert = function(params,paramsBody,cb){
     if(!params) return cb("参数不能为空");
-	if(!params.id) return cb("角色ID不能为空");
-	if(isNaN(parseInt(params.id))) return cb("角色ID必须为数字");
+	if(!params.id) return cb("证书ID不能为空");
+	if(isNaN(parseInt(params.id))) return cb("证书ID必须为数字");
     updateInfo = {}
     updateInfo["pate_string"] = paramsBody.pate_string
     updateInfo["inven_name"] = paramsBody.inven_name

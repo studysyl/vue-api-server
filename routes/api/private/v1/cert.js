@@ -8,9 +8,6 @@ var authorization = require(path.join(process.cwd(),"/modules/authorization"));
 //通过验证模块获得专利证书管理
 var certServ = authorization.getService("CertificateService")
 
-// 通过验证模块获取分类属性
-var attrServ = authorization.getService("AttributeService");
-
 //证书列表
 router.get("/",
     //参数验证
