@@ -84,7 +84,10 @@ module.exports.createManager = function(params,cb) {
 			"mg_mobile":params.mobile,
 			"mg_email":params.email,
 			"mg_time":(Date.parse(new Date())/1000),
-			"role_id":params.rid
+			"role_id":params.rid,
+			"mg_number": '',
+			"mg_company": '',
+			"mg_college": ''
 		},function(err,manager){
 			if(err) return cb("创建失败");
 			result = {
@@ -93,7 +96,10 @@ module.exports.createManager = function(params,cb) {
 				"mobile" : manager.mg_mobile,
 				"email" : manager.mg_email,
 				"role_id" : manager.role_id,
-				"create_time":manager.mg_time
+				"create_time":manager.mg_time,
+				"mg_number": manager.mg_number,
+				"mg_company": manager.mg_company,
+				"mg_college": manager.mg_college
 			};
 			cb(null,result);
 		});
@@ -116,15 +122,46 @@ module.exports.updateManager = function(params,cb) {
 		function(err,manager) {
 			if(err) return cb(err);
 			cb(null,{
-					"id":manager.mg_id,
-					"username":manager.mg_name,
-					"role_id":manager.role_id,
-					"mobile":manager.mg_mobile,
-					"email":manager.mg_email
-				});
+				"id":manager.mg_id,
+				"username":manager.mg_name,
+				"role_id":manager.role_id,
+				"mobile":manager.mg_mobile,
+				"email":manager.mg_email
+			});
 		}
 	)
 }
+//修改用户个人信息
+module.exports.updateManagerinfo = function(params,cb) {
+	managersDAO.update(
+		{
+			"mg_id":params.id,
+			"mg_name":params.name,
+			"mg_pwd":Password.hash(params.password),
+			"mg_mobile":params.mobile,
+			"mg_email":params.email,
+			"mg_number":params.number,
+			"mg_college":params.college,
+			"mg_company":params.company
+		},
+		function(err,manager) {
+			if(err) return cb(err);
+			cb(null,{
+				"id":manager.mg_id,
+				"username":manager.mg_name,
+				"mg_pwd":manager.mg_pwd,
+				"role_id":manager.role_id,
+				"mobile":manager.mg_mobile,
+				"email":manager.mg_email,
+				"number":manager.mg_number,
+				"college":manager.mg_college,
+				"company":manager.mg_company
+			});
+		}
+	)
+}
+
+
 
 /**
  * 通过管理员 ID 获取管理员信息
@@ -143,7 +180,10 @@ module.exports.getManager = function(id,cb) {
 				"rid":manager.role_id,
 				"username":manager.mg_name,
 				"mobile":manager.mg_mobile,
-				"email":manager.mg_email
+				"email":manager.mg_email,
+				"number":manager.mg_number,
+				"college":manager.mg_college,
+				"company":manager.mg_company
 			}
 		);
 	});
@@ -181,6 +221,9 @@ module.exports.setRole = function(id,rid,cb) {
 				"username":manager.mg_name,
 				"mobile":manager.mg_mobile,
 				"email":manager.mg_email,
+				"number":manager.mg_number,
+				"college":manager.mg_college,
+				"company":manager.mg_company
 			});
 		});
 
@@ -199,7 +242,10 @@ module.exports.updateMgrState = function(id,state,cb) {
 				"username":manager.mg_name,
 				"mobile":manager.mg_mobile,
 				"email":manager.mg_email,
-				"mg_state":manager.mg_state ? 1 : 0
+				"mg_state":manager.mg_state ? 1 : 0,
+				"number":manager.mg_number,
+				"college":manager.mg_college,
+				"company":manager.mg_company
 			});
 		});
 
@@ -235,6 +281,9 @@ module.exports.login = function(username,password,cb) {
 					"username":manager.mg_name,
 					"mobile":manager.mg_mobile,
 					"email":manager.mg_email,
+					"number":manager.mg_number,
+					"college":manager.mg_college,
+					"company":manager.mg_company
 				}
 			);
 		} else {

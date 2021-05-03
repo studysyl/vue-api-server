@@ -423,7 +423,6 @@ function doGetAllPics(info) {
 					pic.pics_big_url = pic.pics_big;
 				} else {
 					pic.pics_big_url = upload_config.get("baseURL") + pic.pics_big;
-					
 				}
 				
 				if(pic.pics_mid.indexOf("http") == 0) {

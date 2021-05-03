@@ -113,6 +113,37 @@ router.put("/:id",
 	}
 );
 
+//修改用户个人信息
+router.put("/profile/:id",
+	// 参数验证
+	function(req,res,next) {
+		if(!req.params.id) {
+			return res.sendResult(null,400,"用户ID不能为空");
+		}
+		if(isNaN(parseInt(req.params.id))) return res.sendResult(null,400,"用户ID必须是数字");
+		next();
+	},
+	// 处理业务逻辑
+	function(req,res,next) {
+		mgrServ.updateManagerinfo(
+			{
+				"id":req.params.id,
+				"password":req.body.password,
+				"name":req.body.name,
+				"mobile":req.body.mobile,
+				"email":req.body.email,
+				"number":req.body.number,
+				"college":req.body.college,
+				"company":req.body.company
+			},
+			function(err,manager) {
+				if(err) return res.sendResult(null,400,err);
+				res.sendResult(manager,200,"更新成功");
+			}
+		)(req,res,next);
+	}
+);
+
 // 删除用户信息
 router.delete("/:id",
 	// 验证参数

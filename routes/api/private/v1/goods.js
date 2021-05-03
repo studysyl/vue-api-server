@@ -187,4 +187,16 @@ router.put("/:id/state/:state",
 }
 );
 
+
+router.get('/goodParams/:id',
+	function(req,res,next){
+		next();
+	},
+	function(req,res,next){
+		goodServ.getGoodById(req.params.id,function(err,result){
+			if(err) return res.sendResult(null,400,err);
+			return res.sendResult(result,200,"获取成功");
+		})(req,res,next)
+	}
+)
 module.exports = router;

@@ -8,7 +8,10 @@ module.exports = function(db,callback){
 		role_id : Number,
 		mg_mobile : String,
 		mg_email : String,
-		mg_state : Number
+		mg_state : Number,
+		mg_number: Number,
+		mg_company: String,
+		mg_college: String
 	},{
 		table : "sp_manager"
 	});
