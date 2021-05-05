@@ -150,7 +150,6 @@ router.get('/legal',
         })(req,res,next)
     }
 )
-module.exports = router;
 
 //添加法律信息
 router.post('/addlegal',
@@ -170,3 +169,4 @@ router.post('/addlegal',
         })(req,res,next)
     }
 )
+module.exports = router;

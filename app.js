@@ -101,6 +101,7 @@ app.use('/ueditor', express.static('public/ueditor'))
 app.use('/tmp_uploads', express.static('tmp_uploads'))
 app.use('/x/common', express.static('uploads/common'))
 app.use('/uploads/goodspics', express.static('uploads/goodspics'))
+app.use('/uploads/NewsImg', express.static('uploads/NewsImg'))
 
 var upload_config = require('config').get('upload_config')
 app.use('/' + upload_config.get('upload_ueditor'), express.static(upload_config.get('upload_ueditor')))

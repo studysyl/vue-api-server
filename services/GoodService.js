@@ -474,7 +474,6 @@ function doGetAllAttrs(info) {
  */
 module.exports.createGood = function(params,cb) {
 
-
 	// 验证参数 & 生成数据
 	generateGoodInfo(params)
 	// 检查商品名称
