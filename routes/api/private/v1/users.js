@@ -194,12 +194,6 @@ router.put("/:id/state/:state",
 		}
 		if(isNaN(parseInt(req.params.id))) return res.sendResult(null,400,"用户ID必须是数字");
 
-		// // // if(!req.params.state) {
-		// // // 	return res.sendResult(null,400,"状态不能为空");
-		// // // }
-		// // if(isNaN(parseInt(req.params.state))) return res.sendResult(null,400,"状态必须是数字");
-		// if(parseInt(req.params.state) != 0 && parseInt(req.params.state) != 1) return res.sendResult(null,400,"管理状态只能为0或1");
-
 		next();
 	},
 	// 处理业务逻辑

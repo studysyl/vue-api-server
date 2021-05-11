@@ -8,10 +8,13 @@ const ApplyPatent = require('../models/ApplyPatentModel');
 const { exists, update } = require('../dao/DAO');
 const { info } = require('console');
 const { result } = require('lodash');
+var fs = require("fs");
+var upload_config = require('config').get("upload_config");
+
 databaseModule = require(path.join(process.cwd(),"modules/database"))
 
 
-//查询所有申请数据
+//查询以通过审核的申请数据
 module.exports.getAllApplys = function(params,cb){
     //条件
     var condition = {}
@@ -60,9 +63,8 @@ module.exports.getAllApplys = function(params,cb){
     if(params.legal_status){
         condition["columns"]["legal_status"] = params.legal_status
     }
-    if( params.review_status){
-        condition["columns"]["review_status"] = params.review_status
-    }
+        condition["columns"]["accpet_status"] = 0
+        condition["columns"]["review_status"] = 1
     //获取总的数目
     dao.countByConditions("ApplyPatentModel",condition,function(err,count){
         if(err) return cb(err)
@@ -85,9 +87,13 @@ module.exports.getAllApplys = function(params,cb){
             resultData["total"] = count
             resultData["pagenum"] = pagenum
             resultData["applys"] = _.map(applys,function(applys){
+                applys.pt_example = upload_config.get('baseURL') + applys.pt_example
                 if(applys.review_status === 0){
                     applys.review_status = false
                 }else applys.review_status = true
+                if(applys.accpet_status === 0){
+                    applys.accpet_status = false
+                }else applys.accpet_status =true
                 return applys;
             })
             cb(err,resultData);
@@ -111,18 +117,39 @@ function doCheckParams(params){
         info.mg_id = params.mg_id
         info.ps_number = params.ps_number
         info.pt_username = params.pt_username
-        info.pt_name = params.pt_name
         info.ps_college = params.ps_college
         info.pt_type = params.pt_type
         info.pt_name = params.pt_name
         info.pt_goal = params.pt_goal
         info.pt_content = params.pt_content
         info.pt_compare = params.pt_compare
-        info.pt_example = params.pt_example
+        var pic = params.pt_example
+        var src = path.join(process.cwd(),pic)
+        var tmp = src.split(path.sep)
+        var filename = tmp[tmp.length - 1];
+        info.pt_example = '/uploads/applyimg/' + filename
+        clipImage(src,path.join(process.cwd(),info.pt_example))
+        info.review_opinion = params.review_opinion
+        info.review_name = params.review_name
+        info.review_visible = 0
+        info.legal_status = params.legal_status
         info.review_status = 0//未审核
+        info.accpet_status = 0//未进入受理阶段
         resolve(info)
     });
 }
+
+function clipImage(srcPath,savePath){
+    return new Promise(function(resolve,reject){
+        readable = fs.createReadStream(srcPath)
+        writeable = fs.createWriteStream(savePath)
+        readable.pipe(writeable);
+        readable.on('end',function(){
+            resolve();
+        })
+    })
+}
+
 
 //新建申请信息函数
 function doCreateInfo(info){
@@ -171,7 +198,8 @@ module.exports.delApplyPatent = function(applyId,cb){
         return cb(null)
     })
 }
-// 这里
+
+
 //更新申请数据
 module.exports.updateApply = function(params,paramsBody,cb){
     if(!params) return cb("参数不能为空");
@@ -198,7 +226,7 @@ module.exports.updateApply = function(params,paramsBody,cb){
             "pt_name": newInfo.pt_name,
             "pt_goal": newInfo.pt_goal,
             "pt_content": newInfo.pt_content,
-            "pt_compare": newInfo.pt_compare,
+            "pt_compare": upload_config.get('baseURL') + newInfo.pt_compare,
             "pt_example": newInfo.pt_example,
         });
     })
@@ -253,6 +281,10 @@ module.exports.NoReview = function(params,cb){
         condition["columns"]["legal_status"] = params.legal_status
     }
         condition['columns']["review_status"] = 0
+
+    if(params.accpet_status){
+        condition["columns"]["accpet_status"] = params.accpet_status 
+    }
     dao.countByConditions("ApplyPatentModel",condition,function(err,count){
         if(err) return cb(err)
         pagenum = params.pagenum
@@ -273,6 +305,7 @@ module.exports.NoReview = function(params,cb){
             resultData["total"] = count
             resultData["pagenum"] = pagenum
             resultData["applys"] = _.map(applys,function(applys){
+                applys.pt_example = upload_config.get('baseURL') + applys.pt_example
                 if(applys.review_status === 0){
                     applys.review_status = false
                 }else applys.review_status = true
@@ -282,6 +315,8 @@ module.exports.NoReview = function(params,cb){
         })
     })
 }
+
+
 
 
 //审核意见
@@ -396,4 +431,25 @@ module.exports.createLegal = function(params,cb){
         cb(null,result)
     });
 
+}
+
+module.exports.updateAccState = function(id,state,cb){
+    dao.show('ApplyPatentModel',id,function(err,apply){
+        if(err || !apply) cb('申请信息不存在');
+        dao.update('ApplyPatentModel', id, {"pt_apply_id": apply.pt_apply_id,"accpet_status": state},function(err,newInfo){
+            if(err) return cb("设置失败");
+            cb(null,{
+                "pt_apply_id": newInfo.pt_apply_id,
+                "ps_number": newInfo.ps_number,
+                "pt_username": newInfo.pt_username,
+                "ps_college": newInfo.ps_college,
+                "pt_type": newInfo.pt_type,
+                "pt_name": newInfo.pt_name,
+                "pt_goal": newInfo.pt_goal,
+                "pt_content": newInfo.pt_content,
+                "pt_compare": newInfo.pt_compare,
+                "pt_example": newInfo.pt_example,
+            })
+        })
+    })
 }

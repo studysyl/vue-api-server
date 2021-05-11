@@ -39,7 +39,7 @@ router.get('/',
 )
 
 //创建申请列表
-router.put('/',
+router.post('/',
     //参数验证
     function(req,res,next){
         next()
@@ -169,4 +169,25 @@ router.post('/addlegal',
         })(req,res,next)
     }
 )
+//修改状态
+router.put("/:id/state/:state",
+    function(req,res,next){
+        if(!req.params.id) {
+			return res.sendResult(null,400,"申请id不能为空");
+		}
+		if(isNaN(parseInt(req.params.id))) return res.sendResult(null,400,"申请id必须是数字");
+
+		next();
+    },
+    function(req,res,next){
+        state = 0
+        if(req.params.state && req.params.state == 'true') 
+        state = 1
+        applyServ.updateAccState(req.params.id,state,function(err,apply){
+            if(err) return res.sendResult(null,400,err);
+			res.sendResult(apply,200,"设置状态成功");
+        })(req,res,next);
+    }
+)
+
 module.exports = router;

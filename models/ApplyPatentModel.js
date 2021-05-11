@@ -6,7 +6,7 @@ module.exports = function(db,callback){
         ps_number : String,
         pt_username : String,
         ps_college : String,
-        pt_type : String,
+        pt_type : Number,
         pt_name : String,
         pt_goal : String,
         pt_content : String,
@@ -16,7 +16,8 @@ module.exports = function(db,callback){
         review_name : String,
         review_visible : Number,
         legal_status : String,
-        review_status : Number
+        review_status : Number,
+        accpet_status : Number
     },{
         table : "pt_apply"
         
