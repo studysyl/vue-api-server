@@ -6,7 +6,7 @@ const { exists, update } = require('../dao/DAO');
 databaseModule = require(path.join(process.cwd(),"modules/database"));
 
 
-//查询所有的授权事件getAllactual
+//查询所有的实审事件getAllactual
 module.exports.getAllactual = function(params,cb){
     //条件
     var conditions = {}
@@ -77,9 +77,8 @@ module.exports.getAllactual = function(params,cb){
     })
 }
 
-//添加授权信息
+//添加实审信息
 module.exports.addactual = function(paramsBody,cb){
-    console.log(paramsBody)
     if(!paramsBody) return cb("参数不能为空")
     if(!paramsBody.pt_apply_id) return cb("申请id不能为空")
     dao.create('ActualApplyModel',{
@@ -149,7 +148,7 @@ module.exports.updateRejectState = function(id,state,cb){
     })
 }
 
-// 修改授权状态
+// 修改实审状态
 module.exports.updateGrantState = function(id,state,cb){
     dao.show('ActualApplyModel',id,function(err,apply){
         if(err || !apply) cb('申请信息不存在');

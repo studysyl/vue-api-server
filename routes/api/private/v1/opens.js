@@ -26,6 +26,7 @@ router.get('/',
         conditions["pt_name"] = req.query.pt_name
         conditions["open_time"] = req.query.open_time
         conditions["ps_college"] = req.query.ps_college
+        conditions["pt_type"] = req.query.pt_type
         conditions["actual_status"] = req.query.actual_status
         openServ.getAllopen(conditions,function(err,result){
             if(err) return res.sendResult(null, 400, err)

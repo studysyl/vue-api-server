@@ -5,7 +5,7 @@ var path = require('path')
 // 获取验证模块
 var authorization = require(path.join(process.cwd(),"/modules/authorization"));
 
-var actualServ = authorization.getService('ActualApplyService')
+var grantServ = authorization.getService('GrantApplyService')
 
 // 授权列表
 router.get('/',
@@ -21,15 +21,15 @@ router.get('/',
             "pagenum" : req.query.pagenum,
             "pagesize" : req.query.pagesize
         };
-        conditions["actual_id"] = req.query.actual_id
+        conditions["grant_id"] = req.query.grant_id
         conditions["pt_apply_id"] = req.query.pt_apply_id
-        conditions["apply_number"] = req.query.apply_number
+        conditions["pate_string"] = req.query.pate_string
+        conditions["pt_username"] = req.query.pt_username
         conditions["pt_name"] = req.query.pt_name
-        conditions["actual_time"] = req.query.actual_time
+        conditions["grant_time"] = req.query.grant_time
         conditions["ps_college"] = req.query.ps_college
-        conditions["reject_status"] = req.query.reject_status
-        conditions["grant_status"] = req.query.grant_status
-        actualServ.getAllactual(conditions,function(err,result){
+        conditions["transfer_status"] = req.query.transfer_status
+        grantServ.getAllgrant(conditions,function(err,result){
             if(err) return res.sendResult(null, 400, err)
             res.sendResult(result, 200 ,"获取成功");
         })(req,res,next)
@@ -46,8 +46,9 @@ router.post('/',
     },
     function(req,res,next){
         var params = req.body;
-        actualServ.addactual(params,function(err,newOpen){
-            if(err) return res.sendResult(null, 400, err)
+        grantServ.addgrant(params,function(err,newOpen){
+            if(err)
+            return res.sendResult(null, 400, err)
             res.sendResult(newOpen,201,"受理成功")
         })(req,res,next)
     }
@@ -60,15 +61,15 @@ router.put('/select',
     },
     function(req,res,next){
         var params = req.body
-        actualServ.getactual(params,function(err,newAccept){
+        grantServ.getgrant(params,function(err,newAccept){
             if(err) return res.sendResult(null, 400, err)
             res.sendResult(result, 200 ,"获取成功");
         })(req,res,next)
     }
 )
-//修改驳回状态
 
-router.put("/:id/rejectState/:state",
+//修改转移状态
+router.put("/:id/state/:state",
     function(req,res,next){
         if(!req.params.id) {
 			return res.sendResult(null,400,"申请id不能为空");
@@ -80,31 +81,11 @@ router.put("/:id/rejectState/:state",
         state = 0
         if(req.params.state && req.params.state == 'true') 
         state = 1
-        actualServ.updateRejectState(req.params.id,state,function(err,apply){
+        grantServ.updateTransferState(req.params.id,state,function(err,apply){
             if(err) return res.sendResult(null,400,err);
 			res.sendResult(apply,200,"设置状态成功");
         })(req,res,next);
     }
 )
 
-//修改授权状态
-router.put("/:id/grantState/:state",
-    function(req,res,next){
-        if(!req.params.id) {
-			return res.sendResult(null,400,"申请id不能为空");
-		}
-		if(isNaN(parseInt(req.params.id))) return res.sendResult(null,400,"申请id必须是数字");
-
-		next();
-    },
-    function(req,res,next){
-        state = 0
-        if(req.params.state && req.params.state == 'true') 
-        state = 1
-        actualServ.updateGrantState(req.params.id,state,function(err,apply){
-            if(err) return res.sendResult(null,400,err);
-			res.sendResult(apply,200,"设置状态成功");
-        })(req,res,next);
-    }
-)
 module.exports = router;

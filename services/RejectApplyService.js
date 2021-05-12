@@ -6,15 +6,15 @@ const { exists, update } = require('../dao/DAO');
 databaseModule = require(path.join(process.cwd(),"modules/database"));
 
 
-//查询所有的公开事件getAllOpen
-module.exports.getAllopen = function(params,cb){
+//查询所有的驳回事件getAllreject
+module.exports.getAllreject = function(params,cb){
     //条件
     var conditions = {}
     if(!params.pagenum || params.pagenum <= 0) return cb("pagenum 参数错误")
     if(!params.pagesize || params.pagesize <= 0) return cb("pagesize 参数错误")
     conditions["columns"] = {};
-    if(params.open_id){
-        conditions["columns"]["open_id"] = params.open_id
+    if(params.reject_id){
+        conditions["columns"]["reject_id"] = params.reject_id
     }
     if(params.pt_apply_id){
         conditions["columns"]["pt_apply_id"] = params.pt_apply_id
@@ -25,20 +25,19 @@ module.exports.getAllopen = function(params,cb){
     if(params.pt_name){
         conditions["columns"]["pt_name"] = params.pt_name
     }
-    if(params.pt_type){
-        conditions["columns"]["pt_type"] = params.pt_type
+    if(params.reject_time){
+        conditions["columns"]["reject_time"] = params.reject_time
     }
-    if(params.open_time){
-        conditions["columns"]["open_time"] = params.open_time
+    if(params.reject_info){
+        conditions["columns"]["reject_info"] = params.reject_info
     }
     if(params.ps_college){
         conditions["columns"]["ps_college"] = params.ps_college
     }
-    if(params.actual_status){
-        conditions["columns"]["actual_status"] = params.actual_status
+    if(params.recheck_status){
+        conditions["columns"]["recheck_status"] = params.recheck_status
     }
-
-    dao.countByConditions("OpenApplyModel",conditions,function(err,count){
+    dao.countByConditions("RejectApplyModel",conditions,function(err,count){
         if(err) cb(err)
         pagenum = params.pagenum
         pagesize = params.pagesize
@@ -53,48 +52,49 @@ module.exports.getAllopen = function(params,cb){
         conditions["offset"] = offset;
         conditions["limit"] = limit
 
-        dao.list('OpenApplyModel',conditions,function(err,open){
+        dao.list('RejectApplyModel',conditions,function(err,reject){
             if(err) return cb(err)
             var resultData = {}
             resultData["total"] = count
             resultData["pagenum"] = pagenum
-            resultData["open"] = _.map(open,function(open){
-                if(open.actual_status === 0){
-                    open.actual_status = false
+            resultData["reject"] = _.map(reject,function(reject){
+
+                if(reject.recheck_status === 0){
+                    reject.recheck_status = false
                 }else {
-                    open.actual_status = true
+                    reject.recheck_status = true
                 }
-                return open
+                return reject
             })
             cb(err,resultData)
         });
     })
 }
 
-//添加公开信息
-module.exports.addOpen = function(paramsBody,cb){
+//添加驳回信息
+module.exports.addreject = function(paramsBody,cb){
     if(!paramsBody) return cb("参数不能为空")
     if(!paramsBody.pt_apply_id) return cb("申请id不能为空")
-    dao.create('OpenApplyModel',{
-        "open_id": paramsBody.open_id,
+    dao.create('RejectApplyModel',{
+        "reject_id": paramsBody.reject_id,
         "pt_apply_id": paramsBody.pt_apply_id,
         "apply_number": paramsBody.apply_number,
         "pt_name": paramsBody.pt_name,
-        "pt_type": paramsBody.pt_type,
-        "open_time": paramsBody.open_time,
+        "reject_info": paramsBody.reject_info,
+        "reject_time": paramsBody.reject_time,
         "ps_college": paramsBody.ps_college,
-        "actual_status": paramsBody.actual_status
-    },function(err,open){
+        "recheck_status": paramsBody.recheck_status
+    },function(err,reject){
         if(err) return cb(err);
         var result = {
-            "open_id": open.open_id,
-            "pt_apply_id": open.pt_apply_id,
-            "apply_number": open.apply_number,
-            "pt_type": open.pt_type,
-            "pt_name": open.pt_name,
-            "open_time": open.open_time,
-            "ps_college": open.ps_college,
-            "actual_status": open.actual_status
+            "reject_id": reject.reject_id,
+            "pt_apply_id": reject.pt_apply_id,
+            "apply_number": reject.apply_number,
+            "pt_name": reject.pt_name,
+            "reject_info": paramsBody.reject_info,
+            "reject_time": reject.reject_time,
+            "ps_college": reject.ps_college,
+            "recheck_status": reject.recheck_status
         };
         cb(null,result)
     });
@@ -103,7 +103,7 @@ module.exports.addOpen = function(paramsBody,cb){
 
 
 //根据申请号或者学院找公开信息
-module.exports.getopen = function(params,cb){
+module.exports.getreject = function(params,cb){
     conditions = {}
     conditions["columns"] = {}
     if(params.ps_college){
@@ -111,31 +111,32 @@ module.exports.getopen = function(params,cb){
     }else {
         conditions["columns"]["apply_number"] = params.apply_number
     }
-    dao.list('OpenApplyModel',conditions,function(err,open){
+    dao.list('RejectApplyModel',conditions,function(err,reject){
         if(err) return cb(err)
         var resultData = {}
-        resultData["open"] = _.map(open,function(open){
-            return open
+        resultData["reject"] = _.map(reject,function(reject){
+            return reject
         });
         cb(err,resultData)
     });
 }
 
-// 修改实审状态
-module.exports.updateActualState = function(id,state,cb){
-    dao.show('OpenApplyModel',id,function(err,apply){
+
+// 修改复审状态
+module.exports.updateTransferState = function(id,state,cb){
+    dao.show('RejectApplyModel',id,function(err,apply){
         if(err || !apply) cb('申请信息不存在');
-        dao.update('OpenApplyModel', id, {"pt_apply_id": apply.pt_apply_id,"actual_status": state},function(err,accept){
+        dao.update('RejectApplyModel', id, {"pt_apply_id": apply.pt_apply_id,"recheck_status": state},function(err,reject){
             if(err) return cb("设置失败");
             cb(null,{
-                "open_id": accept.open_id,
-                "pt_apply_id": accept.pt_apply_id,
-                "apply_number": accept.apply_number,
-                "pt_type": accept.pt_type,
-                "pt_name": accept.pt_name,
-                "open_time": accept.open_time,
-                "ps_college": accept.ps_college,
-                "actual_status": accept.actual_status
+                "reject_id": reject.reject_id,
+                "pt_apply_id": reject.pt_apply_id,
+                "apply_number": reject.apply_number,
+                "pt_name": reject.pt_name,
+                "reject_info": paramsBody.reject_info,
+                "reject_time": reject.reject_time,
+                "ps_college": reject.ps_college,
+                "recheck_status": reject.recheck_status
             })
         })
     })

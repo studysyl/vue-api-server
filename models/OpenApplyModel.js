@@ -5,6 +5,7 @@ module.exports = function(db,callback){
         pt_apply_id : Number,
         apply_number : String,
         pt_name : String,
+        pt_type : Number,
         open_time : String,
         ps_college : String,
         actual_status : Number,

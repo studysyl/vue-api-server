@@ -1,5 +1,5 @@
 module.exports = function(db,callback){
-    //专利公开模型
+    //专利实审模型
     db.define("ActualApplyModel",{
         actual_id: {type: 'serial', key: true},
         pt_apply_id : Number,
