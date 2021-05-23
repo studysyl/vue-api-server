@@ -21,7 +21,7 @@ router.get("/:id",
 );
 
 // 添加事件
-router.post('/',
+router.put('/',
         //参数验证
         function(req,res,next){
             next()

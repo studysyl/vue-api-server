@@ -71,7 +71,6 @@ module.exports.getAllAccept = function(params,cb){
 //添加受理信息
 module.exports.addAccept = function(paramsBody,cb){
     if(!paramsBody) return cb("参数不能为空")
-    // if(!paramsBody.accept_id) return cb("受理id不能为空")
     if(!paramsBody.pt_apply_id) return cb("申请id不能为空")
     dao.create('AcceptApplyModel',{
         "accept_id": paramsBody.accept_id,
@@ -135,5 +134,15 @@ module.exports.updateOpenState = function(id,state,cb){
                 "open_status": accept.open_status
             })
         })
+    })
+}
+
+
+
+//删除受理
+module.exports.delAcceptPatent = function(acceptId,cb){
+    dao.destroy("AcceptApplyModel",acceptId,function(err){
+        if(err) return cb(err)
+        return cb(null)
     })
 }

@@ -40,7 +40,6 @@ router.get('/',
 router.post('/',
     //参数验证
     function(req,res,next){
-        // if(!req.body.pt_apply_id) return res.sendResult(null,400,"申请id为空")
         next();
     },
     function(req,res,next){

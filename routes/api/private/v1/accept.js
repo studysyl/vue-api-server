@@ -86,6 +86,21 @@ router.put("/:id/state/:state",
     }
 )
 
+//删除数据
+router.delete('/:id',
+    //验证参数
+    function(req,res,next){
+        if(!req.params.id) return res.sendResult(null, 400, "申请id不能为空")
+        if(isNaN(parseInt(req.params.id))) return res.sendResult(null, 400, "申请id非数字")
+        next()
+    },
+    function(req,res,next){
+        acceptServ.delAcceptPatent(req.params.id,function(err){
+            if(err) return res.sendResult(null, 400, err)
+            return res.sendResult(null,200,'删除成功')
+        })(req,res,next)
+    }
+)
 
 
 module.exports = router;

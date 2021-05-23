@@ -33,7 +33,6 @@ module.exports.getAllTime = function(params,cb){
 //添加时间线
 module.exports.addTimeLine = function(paramsBody,cb){
     if(!paramsBody) return cb("参数不能为空")
-    if(!paramsBody.mg_id) return cb("用户id不能为空")
     if(!paramsBody.pt_apply_id) return cb("申请id不能为空")
     dao.create('TimeLineModel',{
         "mg_id": paramsBody.mg_id,
@@ -59,8 +58,7 @@ module.exports.addTimeLine = function(paramsBody,cb){
 module.exports.getTime = function(params,cb){
     conditions = {}
     conditions["columns"] = {}
-    conditions["columns"]["mg_id"] = params.mg_id
-    conditions["columns"]["pt_apply_id"] = params.pt_apply_id
+    conditions["columns"]["pt_apply_id"] = params.id
     dao.list('TimeLineModel',conditions,function(err,timeData){
         if(err) return cb(err)
         var resultData = {}

@@ -1,4 +1,5 @@
-var express = require('express')
+var express = require('express');
+const { result } = require('lodash');
 var router = express.Router()
 var path = require('path')
 
@@ -181,7 +182,7 @@ router.put("/:id/state/:state",
     },
     function(req,res,next){
         state = 0
-        if(req.params.state && req.params.state == 'true') 
+        if(req.params.state && req.params.state === 'true') 
         state = 1
         applyServ.updateAccState(req.params.id,state,function(err,apply){
             if(err) return res.sendResult(null,400,err);
@@ -189,5 +190,64 @@ router.put("/:id/state/:state",
         })(req,res,next);
     }
 )
+
+router.get('/userid/:id',
+        function(req,res,next){
+            next()
+        },
+        function(req,res,next){
+            applyServ.getUserId(req.params,function(err,userid){
+                if(err) return res.sendResult(null,400,err);
+                res.sendResult(userid,200,"获取用户id成功")
+            })(req,res,next);
+        }
+
+)
+
+// 已经审核的列表
+router.get("/realStatus",
+    function(req,res,next){
+        if(!req.query.pagenum || req.query.pagenum <= 0)return res.sendResult(null, 400, "pagenum 参数错误")
+        if(!req.query.pagesize || req.query.pagesize <= 0) return res.sendResult(null, 400, "pagesize 参数错误")
+        next();
+    },
+        //业务逻辑
+        function(req,res,next){
+            var conditions = {
+                "pagenum" : req.query.pagenum,
+                "pagesize" : req.query.pagesize
+            };
+            conditions["ps_number"] = req.query.ps_number
+            conditions["pt_username"] = req.query.pt_username
+            conditions["ps_college"] = req.query.ps_college
+            conditions["pt_type"] = req.query.pt_type
+            conditions["pt_name"] = req.query.pt_name
+            conditions["pt_goal"] = req.query.pt_goal
+            conditions["pt_content"] = req.query.pt_content
+            conditions["pt_compare"] = req.query.pt_compare
+            conditions["pt_example"] = req.query.pt_example
+            conditions["review_status"] = req.query.review_status
+            applyServ.realReview(conditions,function(err,result){
+                if(err) return res.sendResult(null, 400, err)
+                res.sendResult(result, 200, "获取成功");
+            })(req,res,next)
+        }
+)
+
+
+//根据用户名获取专利id
+router.get('/:id',
+    function(req,res,next){
+        next()
+    },
+    function(req,res,next){
+        applyServ.getApply(req.params,function(err,apply){
+            if(err) return res.sendResult(null, 400, err)
+            res.sendResult(apply, 200 ,"获取成功")
+        })(req,res,next)
+    }
+
+)
+
 
 module.exports = router;

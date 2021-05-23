@@ -317,6 +317,91 @@ module.exports.NoReview = function(params,cb){
 }
 
 
+//已审核信息
+module.exports.realReview = function(params,cb){
+    var condition = {}
+    if(!params.pagenum || params.pagenum <= 0) return cb("pagenum 参数错误")
+    if(!params.pagesize || params.pagesize <= 0) return cb("pagesize 参数错误")
+    condition['columns'] = {}
+    if(params.pt_apply_id){
+        condition["columns"]["pt_apply_id"] = params.pt_apply_id
+    }
+    if(params.ps_number){
+        condition["columns"]["ps_number"] = params.ps_number
+    }
+    if(params.pt_username){
+        condition["columns"]["pt_username"] = params.pt_username
+    }
+    if(params.ps_college){
+        condition["columns"]["ps_college"] = params.ps_college
+    }
+    if(params.pt_type){
+        condition["columns"]["pt_type"] = params.pt_type
+    }
+    if(params.pt_name){
+        condition["columns"]["pt_name"] = params.pt_name
+    }
+    if(params.pt_goal){
+        condition["columns"]["pt_goal"] = params.pt_goal
+    }
+    if(params.pt_content){
+        condition["columns"]["pt_content"] = params.pt_content
+    }
+    if(params.pt_compare){
+        condition["columns"]["pt_compare"] = params.pt_compare
+    }
+    if(params.pt_example){
+        condition["columns"]["pt_example"] = params.pt_example
+    }
+    if(params.review_opinion){
+        condition["columns"]["review_opinion"] = params.review_opinion
+    }
+    if(params.review_name){
+        condition["columns"]["review_name"] = params.review_name
+    }
+    if(params.review_visible){
+        condition["columns"]["review_visible"] = params.review_visible
+    }
+    if(params.legal_status){
+        condition["columns"]["legal_status"] = params.legal_status
+    }
+        condition['columns']["review_status"] = 1
+
+    if(params.accpet_status){
+        condition["columns"]["accpet_status"] = params.accpet_status 
+    }
+    dao.countByConditions("ApplyPatentModel",condition,function(err,count){
+        if(err) return cb(err)
+        pagenum = params.pagenum
+        pagesize = params.pagesize
+        pageCount = Math.ceil(count / pagesize)
+        offset = (pagenum - 1) * pagesize
+        if(offset >= count){
+            offset = count
+        }
+        limit = pagesize;
+
+        //构建条件
+        condition["offset"] = offset;
+        condition["limit"] = limit
+        dao.list("ApplyPatentModel",condition,function(err,applys){
+            if(err) return cb(err)
+            var resultData = {}
+            resultData["total"] = count
+            resultData["pagenum"] = pagenum
+            resultData["applys"] = _.map(applys,function(applys){
+                applys.pt_example = upload_config.get('baseURL') + applys.pt_example
+                if(applys.accpet_status === 0){
+                    applys.accpet_status = false
+                }else applys.accpet_status = true
+                return applys;
+            })
+            cb(err,resultData);
+        })
+    })
+}
+
+
 
 
 //审核意见
@@ -451,5 +536,27 @@ module.exports.updateAccState = function(id,state,cb){
                 "pt_example": newInfo.pt_example,
             })
         })
+    })
+}
+
+//根据申请号找id
+module.exports.getUserId = function(params,cb){
+    dao.findOne('ApplyPatentModel',{'pt_apply_id': params.id},function(err,apply){
+        if(err) return cb(err)
+        return cb(null,{
+            'mg_id': apply.mg_id
+        })
+    })
+}
+
+
+//根据用户名找专利
+module.exports.getApply = function(params,cb){
+    condition = {}
+    condition['columns'] = {}
+    condition['columns']['mg_id'] = params.id
+    dao.list('ApplyPatentModel',condition,function(err,apply){
+        if(err) return cb(err)
+        return cb(null,apply)
     })
 }
