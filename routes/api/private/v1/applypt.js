@@ -86,6 +86,7 @@ router.put('/:id',
         })(req,res,next)
     }
 )
+
 router.get("/status",
     function(req,res,next){
         if(!req.query.pagenum || req.query.pagenum <= 0)return res.sendResult(null, 400, "pagenum 参数错误")

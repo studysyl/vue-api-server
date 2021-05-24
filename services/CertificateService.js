@@ -135,71 +135,73 @@ module.exports.createCert = function(params,cb){
     })
 }
 
-module.exports.getAllCerts = function(params,cb){
-    // 条件
-    var conditions = {};
-    if(!params.pagenum || params.pagenum <= 0) return cb("pagenum 参数错误");
-    if(!params.pagesize || params.pagesize <= 0) return cb("pagesize 参数错误");
-    conditions["columns"] = {};
-    if(params.cert_id){
-        conditions["columns"]["cert_id"] = params.cert_id;
-    }
+// module.exports.getAllCerts = function(params,cb){
+//     // 条件
+//     var conditions = {};
+//     if(!params.pagenum || params.pagenum <= 0) return cb("pagenum 参数错误");
+//     if(!params.pagesize || params.pagesize <= 0) return cb("pagesize 参数错误");
+//     conditions["columns"] = {};
+//     if(params.cert_id){
+//         conditions["columns"]["cert_id"] = params.cert_id;
+//     }
 
-    if(params.pate_string){
-        conditions["columns"]["pate_string"] = params.pate_string;
-    }
-    if(params.inven_name){
-        conditions["columns"]["inven_name"] = params.inven_name
-    }
-    if(params.apply_date){
-        conditions["columns"]["apply_date"] = params.apply_date
-    }
-    if(params.post_string){
-        conditions["columns"]["post_string"] = params.post_string
-    }
-    if(params.cert_name){
-        conditions["columns"]["cert_name"] = params.cert_name
-    }
-    if(params.post_date){
-        conditions["columns"]["post_date"] = params.post_date
-    }
-    if(params.accept_date){
-        conditions["columns"]["accept_date"] = params.accept_date
-    }
-    if(params.accept_number){
-        conditions["columns"]["accept_number"] = params.accept_number
-    }
-    if(params.pate_name){
-        conditions["columns"]["pate_name"] = params.pate_name
-    }
-    dao.countByConditions("CertModel",conditions,function(err,count){
-        if(err) return cb(err);
-        pagesize = params.pagesize;
-        pagenum = params.pagenum;
-        pageCount = Math.ceil(count / pagesize);
-        offset = (pagenum - 1) * pagesize;
-        if(offset >= count){
-            offset = count;
-        }
-        limit = pagesize;
+//     if(params.pate_string){
+//         conditions["columns"]["pate_string"] = params.pate_string;
+//     }
+//     if(params.inven_name){
+//         conditions["columns"]["inven_name"] = params.inven_name
+//     }
+//     if(params.apply_date){
+//         conditions["columns"]["apply_date"] = params.apply_date
+//     }
+//     if(params.post_string){
+//         conditions["columns"]["post_string"] = params.post_string
+//     }
+//     if(params.cert_name){
+//         conditions["columns"]["cert_name"] = params.cert_name
+//     }
+//     if(params.post_date){
+//         conditions["columns"]["post_date"] = params.post_date
+//     }
+//     if(params.accept_date){
+//         conditions["columns"]["accept_date"] = params.accept_date
+//     }
+//     if(params.accept_number){
+//         conditions["columns"]["accept_number"] = params.accept_number
+//     }
+//     if(params.pate_name){
+//         conditions["columns"]["pate_name"] = params.pate_name
+//     }
+//     dao.countByConditions("CertModel",conditions,function(err,count){
+//         if(err) return cb(err);
+//         pagesize = params.pagesize;
+//         pagenum = params.pagenum;
+//         pageCount = Math.ceil(count / pagesize);
+//         offset = (pagenum - 1) * pagesize;
+//         if(offset >= count){
+//             offset = count;
+//         }
+//         limit = pagesize;
 
-        //构建条件
-        conditions["offset"] = offset;
-        conditions["limit"] = limit;
-        //这里没写
+//         //构建条件
+//         conditions["offset"] = offset;
+//         conditions["limit"] = limit;
+//         //这里没写
 
-        dao.list("CertModel",conditions,function(err,certs){
-            if(err) return cb(err);
-            var resultData = {};
-            resultData["total"] = count;
-            resultData["pagenum"] = pagenum;
-            resultData["certs"] = _.map(certs,function(cert){
-                return cert;
-            })
-            cb(err,resultData);
-        })
-    });
-}
+//         dao.list("CertModel",conditions,function(err,certs){
+//             if(err) return cb(err);
+//             var resultData = {};
+//             resultData["total"] = count;
+//             resultData["pagenum"] = pagenum;
+//             resultData["certs"] = _.map(certs,function(cert){
+//                 return cert;
+//             })
+//             cb(err,resultData);
+//         })
+//     });
+// }
+
+
 //根据id查找证书
 module.exports.getCert = function(certId,cb){
     if(!certId) return cb("证书id不能为空");
@@ -256,4 +258,92 @@ module.exports.updateCert = function(params,paramsBody,cb){
         });
     }
   )
+}
+
+
+
+
+module.exports.getAllCerts = function(conditions,cb) {
+	if(!conditions.pagenum) return cb("pagenum 参数不合法");
+	if(!conditions.pagesize) return cb("pagesize 参数不合法");
+	// 通过关键词获取管理员数量
+	countByKey(conditions["query"],function(err,count) {
+		key = conditions["query"];
+		pagenum = parseInt(conditions["pagenum"]);
+		pagesize = parseInt(conditions["pagesize"]);
+		pageCount = Math.ceil(count / pagesize);
+		offset = (pagenum - 1) * pagesize;
+		if(offset >= count) {
+			offset = count;
+		}
+		limit = pagesize;
+        db = databaseModule.getDatabase();
+        sql = "SELECT * FROM pt_certificate";
+    
+        if(key) {
+            sql += " WHERE pate_string LIKE ? LIMIT ?,?";
+            database.driver.execQuery(
+                sql
+            ,["%" + key + "%",offset,limit],function(err,cert){
+                var retcert = [];
+                for(idx in cert) {
+                    var op = cert[idx];
+                    // if(op.actual_status ===0){
+                    //     op.actual_status = false
+                    // }else{
+                    //     op.actual_status = true
+                    // }
+                    retcert.push({
+                        'cert_id':op.cert_id,
+                        'pate_string':op.pate_string,
+                        'inven_name':op.inven_name,
+                        'apply_date':op.apply_date,
+                        'post_string':op.post_string,
+                        'cert_name':op.cert_name,
+                        'post_date':op.post_date,
+                        'accept_date':op.accept_date,
+                        'accept_number':op.accept_number,
+                        'pate_name':op.pate_name
+                    });
+                }
+                var resultDta = {};
+                resultDta["total"] = count;
+                resultDta["pagenum"] = pagenum;
+                resultDta["cert"] = retcert;
+                cb(err,resultDta);
+            });
+        } else {
+            sql += " LIMIT ?,? ";
+            database.driver.execQuery(sql,[offset,limit],function(err,cert){
+                if(err) return cb("查询执行出错");
+                var resultData = {}
+                resultData["total"] = count;
+                resultData["pagenum"] = pagenum;
+                resultData["cert"] = _.map(cert,function(cert){
+                    return cert
+                })
+                cb(null,resultData);
+            });
+        }
+	});
+}
+
+
+function countByKey(key,cb){
+    db = databaseModule.getDatabase();
+	sql = "SELECT count(*) as count FROM pt_certificate";
+	if(key) {
+		sql += " WHERE pate_string LIKE ?";
+		database.driver.execQuery(
+			sql
+		,["%" + key + "%"],function(err,result){
+			if(err) return cb("查询执行出错");
+			cb(null,result[0]["count"]);
+		});
+	} else {
+		database.driver.execQuery(sql,function(err,result){
+			if(err) return cb("查询执行出错");
+			cb(null,result[0]["count"]);
+		});
+	}
 }

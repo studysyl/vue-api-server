@@ -127,22 +127,6 @@ module.exports.getAllNews = function(conditions,cb) {
             database.driver.execQuery(
                 sql
             ,["%" + key + "%",offset,limit],function(err,News){
-                // if(err) return cb("查询执行出错");
-                // var condition = {}
-                // condition["columns"] = {}
-                // condition["columns"]["college"] = params
-                // dao.list('NewsModel',condition,function(err,news){
-                //     if(err) return cb(err)
-                //     // _(news).forEach(function(pic){
-                //     //     pic.news_img = upload_config.get('baseURL') + pic.news_img
-                //     // });
-                //     var resultData = {}
-                //     resultData["news"] = _.map(news,function(news){
-                //         news.news_img = upload_config.get('baseURL') + news.news_img
-                //         return news
-                //     })
-                //     cb(err,resultData)
-                // })
                 var retNews = [];
                 for(idx in News) {
                     var nw = News[idx];
@@ -200,7 +184,6 @@ function countByKey(key,cb){
 			cb(null,result[0]["count"]);
 		});
 	} else {
-        // sql = 'SELECT count(*) as count FROM social_news where news_visible = 1'
 		database.driver.execQuery(sql,function(err,result){
 			if(err) return cb("查询执行出错");
 			cb(null,result[0]["count"]);

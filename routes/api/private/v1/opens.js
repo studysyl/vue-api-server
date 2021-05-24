@@ -16,23 +16,36 @@ router.get('/',
         next();
     },
     //业务逻辑
-    function(req,res,next){
-        var conditions = {
-            "pagenum" : req.query.pagenum,
-            "pagesize" : req.query.pagesize
-        };
-        conditions["open_id"] = req.query.open_id
-        conditions["pt_apply_id"] = req.query.pt_apply_id
-        conditions["pt_name"] = req.query.pt_name
-        conditions["open_time"] = req.query.open_time
-        conditions["ps_college"] = req.query.ps_college
-        conditions["pt_type"] = req.query.pt_type
-        conditions["actual_status"] = req.query.actual_status
-        openServ.getAllopen(conditions,function(err,result){
-            if(err) return res.sendResult(null, 400, err)
-            res.sendResult(result, 200 ,"获取成功");
-        })(req,res,next)
-    }
+    // function(req,res,next){
+    //     var conditions = {
+    //         "pagenum" : req.query.pagenum,
+    //         "pagesize" : req.query.pagesize
+    //     };
+    //     conditions["open_id"] = req.query.open_id
+    //     conditions["pt_apply_id"] = req.query.pt_apply_id
+    //     conditions["pt_name"] = req.query.pt_name
+    //     conditions["open_time"] = req.query.open_time
+    //     conditions["ps_college"] = req.query.ps_college
+    //     conditions["pt_type"] = req.query.pt_type
+    //     conditions["actual_status"] = req.query.actual_status
+    //     openServ.getAllopen(conditions,function(err,result){
+    //         if(err) return res.sendResult(null, 400, err)
+    //         res.sendResult(result, 200 ,"获取成功");
+    //     })(req,res,next)
+    // }
+    function(req,res,next) {
+		openServ.getAllopen(
+			{
+				"query":req.query.query,
+				"pagenum":req.query.pagenum,
+				"pagesize":req.query.pagesize
+			},
+			function(err,result){
+				if(err) return res.sendResult(null,400,err);
+				res.sendResult(result,200,"获取公开列表成功");
+			}
+		)(req,res,next);
+	}
 )
 
 

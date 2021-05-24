@@ -18,48 +18,61 @@ router.get("/",
         next();
     },
     //业务逻辑
-    function(req,res,next){
-        var conditions = {
-            "pagenum": req.query.pagenum,
-            "pagesize": req.query.pagesize
-        };
+    // function(req,res,next){
+    //     var conditions = {
+    //         "pagenum": req.query.pagenum,
+    //         "pagesize": req.query.pagesize
+    //     };
 
-        if(req.query.pate_string){
-            conditions["pate_string"] = req.query.pate_string;
-        }
-        if(req.query.inven_name){
-            conditions["inven_name"] = req.query.inven_name;
-        }
-        if(req.query.apply_date){
-            conditions["apply_date"] = req.query.apply_date;
-        }
-        if(req.query.post_string){
-            conditions["post_string"] = req.query.post_string;
-        }
-        if(req.query.cert_name){
-            conditions["cert_name"] = req.query.cert_name;
-        }
-        if(req.query.post_date){
-            conditions["post_date"] = req.query.post_date;
-        }
-        if(req.query.accept_date){
-            conditions["accept_date"] = req.query.accept_date;
-        }
-        if(req.query.accept_number){
-            conditions["accept_number"] = req.query.accept_number;
-        }
-        if(req.query.pate_name){
-            conditions["pate_name"] = req.query.pate_name;
-        }
+    //     if(req.query.pate_string){
+    //         conditions["pate_string"] = req.query.pate_string;
+    //     }
+    //     if(req.query.inven_name){
+    //         conditions["inven_name"] = req.query.inven_name;
+    //     }
+    //     if(req.query.apply_date){
+    //         conditions["apply_date"] = req.query.apply_date;
+    //     }
+    //     if(req.query.post_string){
+    //         conditions["post_string"] = req.query.post_string;
+    //     }
+    //     if(req.query.cert_name){
+    //         conditions["cert_name"] = req.query.cert_name;
+    //     }
+    //     if(req.query.post_date){
+    //         conditions["post_date"] = req.query.post_date;
+    //     }
+    //     if(req.query.accept_date){
+    //         conditions["accept_date"] = req.query.accept_date;
+    //     }
+    //     if(req.query.accept_number){
+    //         conditions["accept_number"] = req.query.accept_number;
+    //     }
+    //     if(req.query.pate_name){
+    //         conditions["pate_name"] = req.query.pate_name;
+    //     }
 
-        certServ.getAllCerts(
-            conditions,
-            function(err,result){
-                if(err) return res.sendResult(null,400,err);
-                res.sendResult(result,200,"获取成功");
-            }
-        )(req,res,next);
-    }
+    //     certServ.getAllCerts(
+    //         conditions,
+    //         function(err,result){
+    //             if(err) return res.sendResult(null,400,err);
+    //             res.sendResult(result,200,"获取成功");
+    //         }
+    //     )(req,res,next);
+    // }
+    function(req,res,next) {
+		certServ.getAllCerts(
+			{
+				"query":req.query.query,
+				"pagenum":req.query.pagenum,
+				"pagesize":req.query.pagesize
+			},
+			function(err,result){
+				if(err) return res.sendResult(null,400,err);
+				res.sendResult(result,200,"获取证书列表成功");
+			}
+		)(req,res,next);
+	}
 );
 
 

@@ -16,24 +16,37 @@ router.get('/',
         next();
     },
     //业务逻辑
-    function(req,res,next){
-        var conditions = {
-            "pagenum" : req.query.pagenum,
-            "pagesize" : req.query.pagesize
-        };
-        conditions["actual_id"] = req.query.actual_id
-        conditions["pt_apply_id"] = req.query.pt_apply_id
-        conditions["apply_number"] = req.query.apply_number
-        conditions["pt_name"] = req.query.pt_name
-        conditions["actual_time"] = req.query.actual_time
-        conditions["ps_college"] = req.query.ps_college
-        conditions["reject_status"] = req.query.reject_status
-        conditions["grant_status"] = req.query.grant_status
-        actualServ.getAllactual(conditions,function(err,result){
-            if(err) return res.sendResult(null, 400, err)
-            res.sendResult(result, 200 ,"获取成功");
-        })(req,res,next)
-    }
+    // function(req,res,next){
+    //     var conditions = {
+    //         "pagenum" : req.query.pagenum,
+    //         "pagesize" : req.query.pagesize
+    //     };
+    //     conditions["actual_id"] = req.query.actual_id
+    //     conditions["pt_apply_id"] = req.query.pt_apply_id
+    //     conditions["apply_number"] = req.query.apply_number
+    //     conditions["pt_name"] = req.query.pt_name
+    //     conditions["actual_time"] = req.query.actual_time
+    //     conditions["ps_college"] = req.query.ps_college
+    //     conditions["reject_status"] = req.query.reject_status
+    //     conditions["grant_status"] = req.query.grant_status
+    //     actualServ.getAllactual(conditions,function(err,result){
+    //         if(err) return res.sendResult(null, 400, err)
+    //         res.sendResult(result, 200 ,"获取成功");
+    //     })(req,res,next)
+    // }
+    function(req,res,next) {
+		actualServ.getAllactual(
+			{
+				"query":req.query.query,
+				"pagenum":req.query.pagenum,
+				"pagesize":req.query.pagesize
+			},
+			function(err,result){
+				if(err) return res.sendResult(null,400,err);
+				res.sendResult(result,200,"获取受理列表成功");
+			}
+		)(req,res,next);
+	}
 )
 
 

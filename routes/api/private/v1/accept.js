@@ -16,22 +16,35 @@ router.get('/',
         next();
     },
     //业务逻辑
-    function(req,res,next){
-        var conditions = {
-            "pagenum" : req.query.pagenum,
-            "pagesize" : req.query.pagesize
-        };
-        conditions["accept_id"] = req.query.accept_id
-        conditions["pt_apply_id"] = req.query.pt_apply_id
-        conditions["pt_name"] = req.query.pt_name
-        conditions["accept_time"] = req.query.accept_time
-        conditions["ps_college"] = req.query.ps_college
-        conditions["open_status"] = req.query.open_status
-        acceptServ.getAllAccept(conditions,function(err,result){
-            if(err) return res.sendResult(null, 400, err)
-            res.sendResult(result, 200 ,"获取成功");
-        })(req,res,next)
-    }
+    // function(req,res,next){
+    //     var conditions = {
+    //         "pagenum" : req.query.pagenum,
+    //         "pagesize" : req.query.pagesize
+    //     };
+    //     conditions["accept_id"] = req.query.accept_id
+    //     conditions["pt_apply_id"] = req.query.pt_apply_id
+    //     conditions["pt_name"] = req.query.pt_name
+    //     conditions["accept_time"] = req.query.accept_time
+    //     conditions["ps_college"] = req.query.ps_college
+    //     conditions["open_status"] = req.query.open_status
+    //     acceptServ.getAllAccept(conditions,function(err,result){
+    //         if(err) return res.sendResult(null, 400, err)
+    //         res.sendResult(result, 200 ,"获取成功");
+    //     })(req,res,next)
+    // }
+    function(req,res,next) {
+		acceptServ.getAllAccept(
+			{
+				"query":req.query.query,
+				"pagenum":req.query.pagenum,
+				"pagesize":req.query.pagesize
+			},
+			function(err,result){
+				if(err) return res.sendResult(null,400,err);
+				res.sendResult(result,200,"获取受理列表成功");
+			}
+		)(req,res,next);
+	}
 )
 
 
@@ -72,7 +85,6 @@ router.put("/:id/state/:state",
 			return res.sendResult(null,400,"申请id不能为空");
 		}
 		if(isNaN(parseInt(req.params.id))) return res.sendResult(null,400,"申请id必须是数字");
-
 		next();
     },
     function(req,res,next){

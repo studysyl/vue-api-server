@@ -214,7 +214,6 @@ module.exports.updateApply = function(params,paramsBody,cb){
     updateInfo["pt_goal"] = paramsBody.pt_goal
     updateInfo["pt_content"] = paramsBody.pt_content
     updateInfo["pt_compare"] = paramsBody.pt_compare
-    updateInfo["pt_example"] = paramsBody.pt_example
     dao.update('ApplyPatentModel',params.id,updateInfo,
     function(err,newInfo){
         if(err) return cb(err)
@@ -226,7 +225,7 @@ module.exports.updateApply = function(params,paramsBody,cb){
             "pt_name": newInfo.pt_name,
             "pt_goal": newInfo.pt_goal,
             "pt_content": newInfo.pt_content,
-            "pt_compare": upload_config.get('baseURL') + newInfo.pt_compare,
+            "pt_compare": newInfo.pt_compare,
             "pt_example": newInfo.pt_example,
         });
     })

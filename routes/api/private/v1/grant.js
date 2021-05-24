@@ -16,24 +16,37 @@ router.get('/',
         next();
     },
     //业务逻辑
-    function(req,res,next){
-        var conditions = {
-            "pagenum" : req.query.pagenum,
-            "pagesize" : req.query.pagesize
-        };
-        conditions["grant_id"] = req.query.grant_id
-        conditions["pt_apply_id"] = req.query.pt_apply_id
-        conditions["pate_string"] = req.query.pate_string
-        conditions["pt_username"] = req.query.pt_username
-        conditions["pt_name"] = req.query.pt_name
-        conditions["grant_time"] = req.query.grant_time
-        conditions["ps_college"] = req.query.ps_college
-        conditions["transfer_status"] = req.query.transfer_status
-        grantServ.getAllgrant(conditions,function(err,result){
-            if(err) return res.sendResult(null, 400, err)
-            res.sendResult(result, 200 ,"获取成功");
-        })(req,res,next)
-    }
+    // function(req,res,next){
+    //     var conditions = {
+    //         "pagenum" : req.query.pagenum,
+    //         "pagesize" : req.query.pagesize
+    //     };
+    //     conditions["grant_id"] = req.query.grant_id
+    //     conditions["pt_apply_id"] = req.query.pt_apply_id
+    //     conditions["pate_string"] = req.query.pate_string
+    //     conditions["pt_username"] = req.query.pt_username
+    //     conditions["pt_name"] = req.query.pt_name
+    //     conditions["grant_time"] = req.query.grant_time
+    //     conditions["ps_college"] = req.query.ps_college
+    //     conditions["transfer_status"] = req.query.transfer_status
+    //     grantServ.getAllgrant(conditions,function(err,result){
+    //         if(err) return res.sendResult(null, 400, err)
+    //         res.sendResult(result, 200 ,"获取成功");
+    //     })(req,res,next)
+    // }
+    function(req,res,next) {
+		grantServ.getAllgrant(
+			{
+				"query":req.query.query,
+				"pagenum":req.query.pagenum,
+				"pagesize":req.query.pagesize
+			},
+			function(err,result){
+				if(err) return res.sendResult(null,400,err);
+				res.sendResult(result,200,"获取授权列表成功");
+			}
+		)(req,res,next);
+	}
 )
 
 
@@ -87,5 +100,23 @@ router.put("/:id/state/:state",
         })(req,res,next);
     }
 )
+
+
+//删除数据
+router.delete('/:id',
+    //验证参数
+    function(req,res,next){
+        if(!req.params.id) return res.sendResult(null, 400, "申请id不能为空")
+        if(isNaN(parseInt(req.params.id))) return res.sendResult(null, 400, "申请id非数字")
+        next()
+    },
+    function(req,res,next){
+        grantServ.deleteGrant(req.params.id,function(err){
+            if(err) return res.sendResult(null, 400, err)
+            return res.sendResult(null,200,'删除成功')
+        })(req,res,next)
+    }
+)
+
 
 module.exports = router;

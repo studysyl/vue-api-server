@@ -16,23 +16,36 @@ router.get('/',
         next();
     },
     //业务逻辑
-    function(req,res,next){
-        var conditions = {
-            "pagenum" : req.query.pagenum,
-            "pagesize" : req.query.pagesize
-        };
-        conditions["reject_id"] = req.query.reject_id
-        conditions["pt_apply_id"] = req.query.pt_apply_id
-        conditions["apply_number"] = req.query.apply_number
-        conditions["pt_name"] = req.query.pt_name
-        conditions["reject_time"] = req.query.reject_time
-        conditions["ps_college"] = req.query.ps_college
-        conditions["recheck_status"] = req.query.recheck_status
-        rejectServ.getAllreject(conditions,function(err,result){
-            if(err) return res.sendResult(null, 400, err)
-            res.sendResult(result, 200 ,"获取成功");
-        })(req,res,next)
-    }
+    // function(req,res,next){
+    //     var conditions = {
+    //         "pagenum" : req.query.pagenum,
+    //         "pagesize" : req.query.pagesize
+    //     };
+    //     conditions["reject_id"] = req.query.reject_id
+    //     conditions["pt_apply_id"] = req.query.pt_apply_id
+    //     conditions["apply_number"] = req.query.apply_number
+    //     conditions["pt_name"] = req.query.pt_name
+    //     conditions["reject_time"] = req.query.reject_time
+    //     conditions["ps_college"] = req.query.ps_college
+    //     conditions["recheck_status"] = req.query.recheck_status
+    //     rejectServ.getAllreject(conditions,function(err,result){
+    //         if(err) return res.sendResult(null, 400, err)
+    //         res.sendResult(result, 200 ,"获取成功");
+    //     })(req,res,next)
+    // }
+    function(req,res,next) {
+		rejectServ.getAllreject(
+			{
+				"query":req.query.query,
+				"pagenum":req.query.pagenum,
+				"pagesize":req.query.pagesize
+			},
+			function(err,result){
+				if(err) return res.sendResult(null,400,err);
+				res.sendResult(result,200,"获取驳回列表成功");
+			}
+		)(req,res,next);
+	}
 )
 
 
